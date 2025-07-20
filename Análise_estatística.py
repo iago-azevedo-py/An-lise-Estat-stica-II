@@ -20,19 +20,34 @@ import scipy.stats as stats
 # Configuração da API do Gemini
 # =============================================================================
 def configure_gemini():
-    """Configura a API do Gemini"""
-    api_key = st.sidebar.text_input("Digite sua API Key do Google Gemini:", type="password")
-    if api_key:
-        genai.configure(api_key=api_key)
-        return True
-    else:
-        st.sidebar.warning("Por favor, insira sua API Key do Google Gemini")
+    """Configura a API do Gemini usando secrets do Streamlit"""
+    try:
+        # Tenta usar a API key dos secrets do Streamlit Cloud
+        api_key = st.secrets.get("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            return True
+        else:
+            # Fallback para input manual se não estiver configurado nos secrets
+            st.sidebar.warning("⚠️ API Key não configurada nos secrets.")
+            api_key = st.sidebar.text_input("Digite sua API Key do Google Gemini:", type="password", help="Configure GEMINI_API_KEY nos secrets para ativação automática")
+            if api_key:
+                genai.configure(api_key=api_key)
+                return True
+            return False
+    except Exception as e:
+        # Fallback para input manual se houver erro
+        st.sidebar.error(f"Erro ao acessar secrets: {str(e)}")
+        api_key = st.sidebar.text_input("Digite sua API Key do Google Gemini:", type="password")
+        if api_key:
+            genai.configure(api_key=api_key)
+            return True
         return False
 
 def ask_gemini_agent(question, data_context):
     """Agente de IA para responder dúvidas sobre análise"""
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         prompt = f"""
         Você é um especialista em análise estatística financeira. Com base nos seguintes dados:
         
@@ -449,10 +464,16 @@ with tab5:
             st.session_state.clear()
             
     else:
-        st.warning("⚠️ Configure sua API Key do Google Gemini na barra lateral para usar o chat.")
-        st.markdown("""
-        **Como obter sua API Key:**
+        st.warning("⚠️ Configure sua API Key do Google Gemini.")
+        st.info("""
+        **📋 Instruções para Configuração:**
+        
+        **Para administradores (Streamlit Cloud):**
+        1. Vá em Settings → Secrets no seu app
+        2. Adicione: `GEMINI_API_KEY = "sua_chave_aqui"`
+        
+        **Para usuários locais:**
         1. Acesse [Google AI Studio](https://makersuite.google.com/app/apikey)
         2. Crie uma nova API Key
-        3. Copie e cole na barra lateral
+        3. Cole na barra lateral
         """)
