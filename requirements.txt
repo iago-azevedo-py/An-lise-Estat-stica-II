@@ -1,0 +1,9 @@
+yfinance
+pandas
+matplotlib
+seaborn
+statsmodels
+streamlit
+google-generativeai
+plotly
+scipy
