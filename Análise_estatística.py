@@ -47,7 +47,7 @@ def configure_gemini():
 def ask_gemini_agent(question, data_context):
     """Agente de IA para responder dúvidas sobre análise"""
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         prompt = f"""
         Você é um especialista em análise estatística financeira. Com base nos seguintes dados:
         
@@ -477,3 +477,67 @@ with tab5:
         2. Crie uma nova API Key
         3. Cole na barra lateral
         """)
+        
+with st.expander("ℹ️ Explicação do Código e dos Cálculos Estatísticos"):
+    st.markdown("""
+    ## Explicação Geral do Código
+
+    Este dashboard analisa a relação entre o preço das ações da Petrobras (PETR4) e o preço do petróleo Brent. Ele coleta dados automaticamente, faz cálculos estatísticos, gera gráficos interativos e cria um relatório explicativo. Você também pode tirar dúvidas com um agente de IA integrado.
+
+    ---
+
+    ## Outras Funcionalidades da Dashboard
+
+    ### 📊 **Visualizações Interativas**
+    - **Séries Temporais:** Mostra como os preços evoluíram ao longo do tempo
+    - **Gráficos de Dispersão:** Visualiza a relação entre PETR4 e Brent
+    - **Matriz de Correlação:** Mapa de calor mostrando correlações
+    - **Histogramas:** Distribuição dos retornos diários
+
+    ### 📈 **Abas Organizadas**
+    - **Aba 1:** Evolução temporal dos preços (normalizada e absoluta)
+    - **Aba 2:** Análise de correlação com múltiplos gráficos
+    - **Aba 3:** Regressão linear detalhada com análise de resíduos
+    - **Aba 4:** Relatório automático interpretativo
+    - **Aba 5:** Chat com IA para dúvidas
+
+    ### 🤖 **Agente de IA Integrado**
+    ```python
+    # Configuração da API Gemini
+    def configure_gemini():
+        api_key = st.secrets.get("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            return True
+    
+    # Função do agente
+    def ask_gemini_agent(question, data_context):
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        return response.text
+    ```
+
+    ### ⚙️ **Recursos Técnicos**
+    - **Cache de dados:** `@st.cache_data` para performance
+    - **Configuração responsiva:** Layout wide para melhor visualização
+    - **Download de relatórios:** Exportação em texto
+    - **Métricas em tempo real:** Valores atualizados automaticamente
+
+    ### 🔒 **Segurança**
+    - **API Keys protegidas:** Uso de secrets do Streamlit
+    - **Fallback local:** Input manual se secrets não configurados
+    - **Arquivo .gitignore:** Proteção de dados sensíveis
+
+    ---
+
+    ## Fluxo de Funcionamento
+
+    1. **Coleta:** `yfinance` busca dados históricos
+    2. **Processamento:** Pandas limpa e organiza os dados
+    3. **Cálculos:** Statsmodels e Scipy fazem as análises estatísticas
+    4. **Visualização:** Plotly cria gráficos interativos
+    5. **Interpretação:** Classe AnalystAgent gera relatório
+    6. **Interação:** Gemini AI responde dúvidas dos usuários
+
+    Este dashboard transforma análises estatísticas complexas em insights visuais e acessíveis para qualquer pessoa interessada em investimentos!
+    """)
